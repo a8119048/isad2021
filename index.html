@@ -9,6 +9,15 @@
     <script type="text/javascript" src="lib/osql.js"></script>
 
     <script>
+        $(document).ready(function () {
+            autoFill(); // フォームの自動fill
+        });
+
+        function autoFill() {
+            var id = sessionStorage.getItem('userid');
+            if (id) document.getElementById('tf1').value = id;
+        }
+
         async function buttonPressed() {
             var userid = document.getElementById('tf1').value;
             var password = document.getElementById('tf2').value;
@@ -34,17 +43,21 @@
 
 </head>
 
-<body>
+<body class="container-fluid">
     <h1>株式会社宮川紹介　備品管理システム</h1>
-    <div>
+    <form class="border col-5">
         <h2>ログイン</h2>
-        社員番号：<input id="tf1" value="" type="textfield">
-        <br>
-        パスワード：<input id="tf2" value="" type="password">
-        <br>
-        <button onclick="buttonPressed()">ログイン</button>
+        <div class="form-group input-group">
+            <label for="tf1" class="form-label">社員番号：</label>
+            <input id="tf1" value="" type="textfield" class="form-control">
+        </div>
+        <div class="form-group input-group">
+            <label for="tf2" class="form-label">パスワード：</label>
+            <input id="tf2" value="" type="password" class="form-control">
+        </div>
+        <button class="btn btn-primary" onclick="buttonPressed()">ログイン</button>
         <p id="result"></p>
-    </div>
+    </form>
 </body>
 
 </html>
