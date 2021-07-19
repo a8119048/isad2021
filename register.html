@@ -1,65 +1,71 @@
 <!DOCTYPE html>
 
 <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+            crossorigin="anonymous"
+        />
+        <script type="text/javascript" src="lib/jquery.min.js"></script>
+        <script type="text/javascript" src="lib/osql.js"></script>
 
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
-    <script type="text/javascript" src="lib/jquery.min.js"></script>
-    <script type="text/javascript" src="lib/osql.js"></script>
+        <script>
+            var userid = sessionStorage.getItem('userid');
+            var username = sessionStorage.getItem('username');
+            var belong = sessionStorage.getItem('belong');
 
-    <script>
-        var userid = sessionStorage.getItem('userid');
-        var username = sessionStorage.getItem('username');
-        var belong = sessionStorage.getItem('belong');
+            function buttonPressed() {
+                var name = document.getElementById('tf1').innerHTML;
+                var img = document.getElementById('img');
+                var number = document.getElementById('tf2').innerHTML;
+                var classification = document.getElementById('classification').innerHTML;
 
-        function buttonPressed() {
-            var name = document.getElementById('tf1').innerHTML;
-            var img = document.getElementById('img');
-            var number = document.getElementById('tf2').innerHTML;
-            var classification = document.getElementById('classification').innerHTML;
+                var sql = `insert into Equipments (name, img, number, classification, belong, registrantid, registereddate) values (${name}, ${img}, ${number}, ${classification}, ${belong}, ${userid}, ${now()});`;
+                var objects = await osql.connect(sql);
+                console.log(sql);
+                console.log(objects);
+                document.getElementById('result').innerHTML = "OK";
+            }
+        </script>
+    </head>
 
-            var sql = `insert into Equipments (name, img, number, classification, belong, registrantid, registereddate) values (${name}, ${img}, ${number}, ${classification}, ${belong}, ${userid}, ${now()});`;
-            var objects = await osql.connect(sql);
-        }
-    </script>
-
-</head>
-
-<body class="container-fluid">
-    <h1>株式会社宮川紹介　備品管理システム</h1>
-    <div class="border col-5">
-        <h2>備品情報登録</h2>
-        <hr>
-        <div class="row">
-            <div class="col-md">
-                <form>
-                    <div class="mb-3 input-group">
-                        <label for="tf1" class="form-label">物品名：</label>
-                        <input class="form-control" id="tf1" value="" type="textfield">
-                    </div>
-                    <div class="mb-3 input-group">
-                        <label for="img" class="form-label">画像：</label>
-                        <input class="form-control" id="img" type="file" accept=".jpg, .png, .gif">
-                    </div>
-                    <div class="mb-3 input-group">
-                        <label for="tf2" class="form-label">型番：</label>
-                        <input class="form-control" id="tf2" value="" type="textfield">
-                    </div>
-                    <div class="mb-3 form-group input-group">
-                        <label for="classification" class="form-label">分類：</label>
-                        <select id="classification" class="form-control">
-                            <option value="PC">PC</option>
-                            <option value="文房具">文房具</option>
-                            <option value="デスク用品">デスク用品</option>
-                        </select>
-                    </div>
-                    <br>
-                    <button class="btn btn-primary" onclick="buttonPressed()">登録</button>
-                </form>
+    <body class="container-fluid">
+        <h1>株式会社宮川紹介　備品管理システム</h1>
+        <div class="border col-5">
+            <h2>備品情報登録</h2>
+            <hr />
+            <div class="row">
+                <div class="col-md">
+                    <form>
+                        <div class="mb-3 input-group">
+                            <label for="tf1" class="form-label">物品名：</label>
+                            <input class="form-control" id="tf1" value="" type="textfield" />
+                        </div>
+                        <div class="mb-3 input-group">
+                            <label for="img" class="form-label">画像：</label>
+                            <input class="form-control" id="img" type="file" accept=".jpg, .png, .gif" />
+                        </div>
+                        <div class="mb-3 input-group">
+                            <label for="tf2" class="form-label">型番：</label>
+                            <input class="form-control" id="tf2" value="" type="textfield" />
+                        </div>
+                        <div class="mb-3 form-group input-group">
+                            <label for="classification" class="form-label">分類：</label>
+                            <select id="classification" class="form-control">
+                                <option value="PC">PC</option>
+                                <option value="文房具">文房具</option>
+                                <option value="デスク用品">デスク用品</option>
+                            </select>
+                        </div>
+                        <br />
+                        <button class="btn btn-primary" onclick="buttonPressed()">登録</button>
+                        <p id="result"></p>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-</body>
-
+    </body>
 </html>
