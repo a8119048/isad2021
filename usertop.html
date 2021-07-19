@@ -11,7 +11,29 @@
     <script>
         $().ready(function () {
             init();
+            viewEquipments();
         });
+        async function viewEquipments() {
+                var sql = "select * from Equipments";
+                var objects = await osql.connect(sql);
+                console.log(objects);
+                var html = "";
+                html = html + '<table border="1">';
+                for (var i = 0; i < objects.length; i++) {
+                    html = html + "<tr>";
+                    var object = objects[i];
+                    html = html + "<td>" + object.id + "</td>";
+                    html = html + "<td>" + object.name + "</td>";
+                    html = html + "<td>" + object.number + "</td>";
+                    html = html + "<td>" + object.classification + "</td>";
+                    html = html + "<td>" + object.status + "</td>";
+                    html = html + "<td>" + object.registrantid + "</td>";
+                    html = html + "<td>" + object.registereddate + "</td>";
+                    html = html + "</tr>";
+                }
+                html = html + "</table>";
+                document.getElementById("result").innerHTML = html;
+            }
 
         var userid = sessionStorage.getItem('userid');
         var username = sessionStorage.getItem('username');
