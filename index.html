@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <script type="text/javascript" src="lib/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/osql.js"></script>
+
+    <script>
+        async function buttonPressed() {
+            var userid = document.getElementById('tf1').value;
+            var password = document.getElementById('tf2').value;
+
+            var sql = `select * from Users where userid="${userid}";`;
+            var objects = await osql.connect(sql);
+            if (objects.length <= 0) {
+                document.getElementById('result').innerHTML = 'ログイン失敗：ユーザが見つかりません';
+                return;
+            }
+            if (objects[0].password != password) {
+                document.getElementById('result').innerHTML = 'ログイン失敗：パスワードが違います';
+                return;
+            }
+
+            sessionStorage.setItem('userid', objects[0].userid);
+            sessionStorage.setItem('username', objects[0].username);
+            sessionStorage.setItem('belong', objects[0].belong);
+
+            location.href = 'usertop.html';
+        }
+    </script>
+
+</head>
+
+<body>
+    <h1>株式会社宮川紹介　備品管理システム</h1>
+    <div>
+        <h2>ログイン</h2>
+        社員番号：<input id="tf1" value="" type="textfield">
+        <br>
+        パスワード：<input id="tf2" value="" type="password">
+        <br>
+        <button onclick="buttonPressed()">ログイン</button>
+        <p id="result"></p>
+    </div>
+</body>
+
+</html>

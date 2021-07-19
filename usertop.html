@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <script type="text/javascript" src="lib/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/osql.js"></script>
+
+    <script>
+        $().ready(function () {
+            init();
+        });
+
+        var userid = sessionStorage.getItem('userid');
+        var username = sessionStorage.getItem('username');
+        var belong = sessionStorage.getItem('belong');
+
+        async function init() {
+            document.getElementById('welcome').innerHTML = '社員番号：' + userid + '　社員名：' + username + '　所属：' + belong;
+
+            /*var sql = `select * from Stocks where belong="${belong}";`;
+            var objects = await osql.connect(sql);
+            document.getElementById('result').innerHTML = objects;*/
+        }
+
+        function buttonPressed() {
+            sessionStorage.setItem('userid', userid);
+            sessionStorage.setItem('username', username);
+            sessionStorage.setItem('belong', belong);
+
+            location.href = 'register.html';
+        }
+    </script>
+
+</head>
+
+<body>
+    <h1>株式会社宮川紹介　備品管理システム</h1>
+    <p id="welcome"></p>
+    <hr>
+    <h2>備品管理情報</h2>
+    <button onclick="buttonPressed()">備品登録</button>
+    <p id="result"></p>
+</body>
+
+</html>

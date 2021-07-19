@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <script type="text/javascript" src="lib/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/osql.js"></script>
+
+    <script>
+        var userid = sessionStorage.getItem('userid');
+        var username = sessionStorage.getItem('username');
+        var belong = sessionStorage.getItem('belong');
+        
+        function buttonPressed() {
+            var name = document.getElementById('tf1').innerHTML;
+            var img = document.getElementById('img');
+            var number = document.getElementById('tf2').innerHTML;
+            var classification = document.getElementById('classification').innerHTML;
+
+            var sql = `insert into Equipments (name, img, number, classification, belong, registrantid, registereddate) values (${name}, ${img}, ${number}, ${classification}, ${belong}, ${userid}, ${now()});`;
+            var objects = await osql.connect(sql);
+        }
+    </script>
+
+</head>
+
+<body>
+    <h1>株式会社宮川紹介　備品管理システム</h1>
+    <div>
+        <h2>備品情報登録</h2>
+        <hr>
+        物品名：<input id="tf1" value="" type="textfield">
+        <br>
+        画像：<input id="img" type="file" accept=".jpg, .png, .gif">
+        <br>
+        型番：<input id="tf2" value="" type="textfield">
+        <br>
+        分類：<select id="classification">
+            <option></option>
+        </select>
+        <br>
+        <button onclick="buttonPressed()">登録</button>
+    </div>
+</body>
+
+</html>
