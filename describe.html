@@ -13,22 +13,21 @@
                 viewEquipments();
             });
             async function viewEquipments() {
-                var sql = "select * from Equipments";
+                var sql = `select * from PC_describes where id = "${osql.getParam("id")}"`;
                 var objects = await osql.connect(sql);
-                console.log(objects);
+                console.log(sql);
                 var html = "";
-                for (var i = 0; i < objects.length; i++) {
-                    html = html + "<tr>";
-                    var object = objects[i];
-                    html = html + "<td>" + object.id + "</td>";
-                    html = html + "<td>" + object.name + "</td>";
-                    html = html + "<td>" + object.model + "</td>";
-                    html = html + "<td>" + object.classification + "</td>";
-                    html = html + "<td>" + object.status + "</td>";
-                    html = html + "<td>" + object.registrantid + "</td>";
-                    html = html + `<td><a href="describe.html?id=${object.id}">詳細</a></td>`;
-                    html = html + "</tr>";
-                }
+
+                var object = objects[0];
+                html = html + "<tr><th>管理番号</th><td>" + object.id + "</td></tr>";
+                html = html + "<tr><th>商品名</th><td>" + object.name + "</td></tr>";
+                html = html + "<tr><th>型番</th><td>" + object.model + "</td></tr>";
+                html = html + "<tr><th>OS</th><td>" + object.OS + "</td></tr>";
+                html = html + "<tr><th>メモリ（RAM）</th><td>" + object.RAM + "</td></tr>";
+                html = html + "<tr><th>耐用年数</th><td>" + object.durable_years + "</td></tr>";
+                html = html + "<tr><th>検収日</th><td>" + object.accepted_at + "</td></tr>";
+                html = html + "<tr><th>備考</th><td>" + object.note + "</td></tr>";
+
                 document.getElementById("tbody").innerHTML = html;
             }
 
@@ -63,17 +62,6 @@
         <button onclick="buttonPressed()">備品登録</button>
         <p id="result"></p>
         <table border="1">
-            <thead>
-                <tr>
-                    <th>管理番号</th>
-                    <th>商品名</th>
-                    <th>品番</th>
-                    <th>分類</th>
-                    <th>利用状態</th>
-                    <th>登録者</th>
-                    <th>詳細</th>
-                </tr>
-            </thead>
             <tbody id="tbody"></tbody>
         </table>
     </body>
