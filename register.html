@@ -13,59 +13,122 @@
         <script type="text/javascript" src="lib/osql.js"></script>
 
         <script>
-            var userid = sessionStorage.getItem('userid');
-            var username = sessionStorage.getItem('username');
-            var belong = sessionStorage.getItem('belong');
+            var userid = sessionStorage.getItem("userid");
+            var username = sessionStorage.getItem("username");
+            var belong = sessionStorage.getItem("belong");
 
-            function buttonPressed() {
-                var name = document.getElementById('tf1').innerHTML;
-                var img = document.getElementById('img');
-                var number = document.getElementById('tf2').innerHTML;
-                var classification = document.getElementById('classification').innerHTML;
+            async function buttonPressed() {
+                var name = document.getElementById("tf1").value;
+                var img = document.getElementById("img").files[0].name;
+                var number = document.getElementById("tf2").value;
+                var classification = document.getElementById("classification").value;
+                var state = document.getElementById("state").value;
+                var note = document.getElementById("tf7").value;
 
-                var sql = `insert into Equipments (name, img, number, classification, belong, registrantid, registereddate) values (${name}, ${img}, ${number}, ${classification}, ${belong}, ${userid}, ${now()});`;
-                var objects = await osql.connect(sql);
-                console.log(sql);
+                var sql = `select id from Equipments order by registered_at desc`;
+                var manageIds = await osql.connect(sql);
+                if (manageIds.length) {
+                    var manageId = manageIds[0].id;
+                    manageId = manageId.substring(0, 4) + (4, -1) + 1;
+                    console(manageId);
+                } else {
+                    var manageId = "2021000001";
+                    switch (belong) {
+                        case "管理部":
+                            manageId = "M" + manageId;
+                            break;
+                        case "販売部":
+                            manageId = "S" + manageId;
+                            break;
+                        case "仕入部":
+                            manageId = "P" + manageId;
+                            break;
+                    }
+                    console.log(manageId);
+                }
+
+                var sql2 = `insert into Equipments (id, name, img, model, classification, belong, status, registrantid, registered_at) values ("${manageId}", "${name}", "${img}", "${number}", "${classification}", "${belong}", "${state}", ${userid}, ${note}, now());`;
+                console.log(sql2);
+                var objects = await osql.connect(sql2);
                 console.log(objects);
-                document.getElementById('result').innerHTML = "OK";
+                document.getElementById("result").innerHTML = "OK";
             }
+
+            function classificationChange
         </script>
     </head>
 
     <body class="container-fluid">
         <h1>株式会社宮川紹介　備品管理システム</h1>
-        <div class="border col-5">
-            <h2>備品情報登録</h2>
-            <hr />
+        <h2>備品情報登録</h2>
+        <hr />
+
+        <div class="container">
             <div class="row">
-                <div class="col-md">
-                    <form>
-                        <div class="mb-3 input-group">
-                            <label for="tf1" class="form-label">物品名：</label>
-                            <input class="form-control" id="tf1" value="" type="textfield" />
-                        </div>
-                        <div class="mb-3 input-group">
-                            <label for="img" class="form-label">画像：</label>
-                            <input class="form-control" id="img" type="file" accept=".jpg, .png, .gif" />
-                        </div>
-                        <div class="mb-3 input-group">
-                            <label for="tf2" class="form-label">型番：</label>
-                            <input class="form-control" id="tf2" value="" type="textfield" />
-                        </div>
-                        <div class="mb-3 form-group input-group">
-                            <label for="classification" class="form-label">分類：</label>
-                            <select id="classification" class="form-control">
-                                <option value="PC">PC</option>
-                                <option value="文房具">文房具</option>
-                                <option value="デスク用品">デスク用品</option>
-                            </select>
-                        </div>
-                        <br />
-                        <button class="btn btn-primary" onclick="buttonPressed()">登録</button>
-                        <p id="result"></p>
-                    </form>
+                <div class="col-sm-2" style="padding: 9px">物品名：</div>
+                <div class="col-sm-10 form-inline" style="padding: 3px">
+                    <input type="text" class="form-control input-sm" id="tf1" size="20" />
                 </div>
             </div>
+            <div class="row">
+                <div class="col-sm-2" style="padding: 9px">画像：</div>
+                <div class="col-sm-10 form-inline" style="padding: 3px">
+                    <input class="form-control" id="img" type="file" accept=".jpg, .png, .gif" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2" style="padding: 9px">型番：</div>
+                <div class="col-sm-10 form-inline" style="padding: 3px">
+                    <input type="text" class="form-control input-sm" id="tf2" size="20" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2" style="padding: 9px">分類：</div>
+                <div class="col-sm-10 form-inline" style="padding: 3px">
+                    <select class="form-control input-sm" id="classification" oninput="classificationChange(value)">
+                        <option value="PC">PC</option>
+                        <option value="文房具">文房具</option>
+                        <option value="デスク用品">デスク用品</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2" style="padding: 9px">使用状況：</div>
+                <div class="col-sm-10 form-inline" style="padding: 3px">
+                    <select class="form-control input-sm" id="state">
+                        <option value="使用中">使用中</option>
+                        <option value="故障中">故障中</option>
+                        <option value="保管中">保管中</option>
+                        <option value="処分済">処分済</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2" style="padding: 9px">OS：</div>
+                <div class="col-sm-10" style="padding: 3px">
+                    <input type="text" class="form-control input-sm" id="tf4" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2" style="padding: 9px">メモリ：</div>
+                <div class="col-sm-10 form-inline" style="padding: 3px">
+                    <input type="text" class="form-control input-sm" id="tf5" size="30" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2" style="padding: 9px">耐用年数：</div>
+                <div class="col-sm-10 form-inline" style="padding: 3px">
+                    <input type="text" class="form-control input-sm" id="tf6" placeholder="数字のみ" size="30" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2" style="padding: 9px">備考</div>
+                <div class="col-sm-10" style="padding: 3px">
+                    <textarea class="form-control input-sm" rows="3" id="tf7"></textarea>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="buttonPressed()">登録</button>
+            <p id="result"></p>
         </div>
     </body>
 </html>
