@@ -17,11 +17,16 @@
             var username = sessionStorage.getItem("username");
             var belong = sessionStorage.getItem("belong");
 
+            var classificationSelect = "PC";
+
             async function buttonPressed() {
                 var name = document.getElementById("tf1").value;
                 var img = document.getElementById("img").files[0].name;
                 var number = document.getElementById("tf2").value;
                 var classification = document.getElementById("classification").value;
+                var os = document.getElementById("tf4").value;
+                var ram = document.getElementById("tf5").value;
+                var durableYears = document.getElementById("tf6").value;
                 var state = document.getElementById("state").value;
                 var note = document.getElementById("tf7").value;
 
@@ -29,8 +34,9 @@
                 var manageIds = await osql.connect(sql);
                 if (manageIds.length) {
                     var manageId = manageIds[0].id;
-                    manageId = manageId.substring(0, 4) + (4, -1) + 1;
-                    console(manageId);
+                    console.log(manageId, manageId.substring(0, 5), manageId.substring(5, 11));
+                    manageId = `${manageId.substring(0, 1)}${Number(manageId.substring(1, 11)) + 1}`;
+                    console.log(manageId);
                 } else {
                     var manageId = "2021000001";
                     switch (belong) {
@@ -47,14 +53,28 @@
                     console.log(manageId);
                 }
 
-                var sql2 = `insert into Equipments (id, name, img, model, classification, belong, status, registrantid, registered_at) values ("${manageId}", "${name}", "${img}", "${number}", "${classification}", "${belong}", "${state}", ${userid}, ${note}, now());`;
+                var sql2 = `insert into Equipments (id, name, img, model, classification, belong, status, registrantid, note, registered_at) values ("${manageId}", "${name}", "${img}", "${number}", "${classification}", "${belong}", "${state}", ${userid}, "${note}", now());`;
+                await osql.connect(sql2);
+                if (classificationSelect == "PC") {
+                    var sql3 = `insert into PC_describes (id, name, model, OS, RAM, durable_years, accepted_at, register_id, note) values ("${manageId}", "${name}", "${number}", "${os}", "${ram}", ${durableYears}, now(), ${userid}, "${note}");`;
+                    await osql.connect(sql3);
+                }
                 console.log(sql2);
-                var objects = await osql.connect(sql2);
-                console.log(objects);
                 document.getElementById("result").innerHTML = "OK";
             }
 
-            function classificationChange
+            function classificationChange(value) {
+                classificationSelect = value;
+                // PC関連のグレーアウト設定
+                pcInfos = document.getElementsByClassName("PCinfo");
+                for (var i = 0; i < pcInfos.length; i++) {
+                    if (value == "PC") {
+                        pcInfos[i].removeAttribute("disabled");
+                    } else {
+                        pcInfos[i].setAttribute("disabled", "");
+                    }
+                }
+            }
         </script>
     </head>
 
@@ -63,72 +83,91 @@
         <h2>備品情報登録</h2>
         <hr />
 
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-2" style="padding: 9px">物品名：</div>
-                <div class="col-sm-10 form-inline" style="padding: 3px">
-                    <input type="text" class="form-control input-sm" id="tf1" size="20" />
+        <div class="container text-right">
+            <form>
+                <div class="row">
+                    <div class="col-sm-2" style="padding: 9px">物品名：</div>
+                    <div class="col-sm-10 form-inline" style="padding: 3px">
+                        <input name="product" type="text" class="form-control input-sm" id="tf1" size="20" required />
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-2" style="padding: 9px">画像：</div>
-                <div class="col-sm-10 form-inline" style="padding: 3px">
-                    <input class="form-control" id="img" type="file" accept=".jpg, .png, .gif" />
+                <div class="row">
+                    <div class="col-sm-2" style="padding: 9px">画像：</div>
+                    <div class="col-sm-10 form-inline" style="padding: 3px">
+                        <input name="img" class="form-control" id="img" type="file" accept=".jpg, .png, .gif" />
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-2" style="padding: 9px">型番：</div>
-                <div class="col-sm-10 form-inline" style="padding: 3px">
-                    <input type="text" class="form-control input-sm" id="tf2" size="20" />
+                <div class="row">
+                    <div class="col-sm-2" style="padding: 9px">型番：</div>
+                    <div class="col-sm-10 form-inline" style="padding: 3px">
+                        <input name="model" type="text" class="form-control input-sm" id="tf2" size="20" required />
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-2" style="padding: 9px">分類：</div>
-                <div class="col-sm-10 form-inline" style="padding: 3px">
-                    <select class="form-control input-sm" id="classification" oninput="classificationChange(value)">
-                        <option value="PC">PC</option>
-                        <option value="文房具">文房具</option>
-                        <option value="デスク用品">デスク用品</option>
-                    </select>
+                <div class="row">
+                    <div class="col-sm-2" style="padding: 9px">分類：</div>
+                    <div class="col-sm-10 form-inline" style="padding: 3px">
+                        <select
+                            name="classification"
+                            class="form-control input-sm"
+                            id="classification"
+                            onchange="classificationChange(value)"
+                            required
+                        >
+                            <option value="PC">PC</option>
+                            <option value="文房具">文房具</option>
+                            <option value="デスク用品">デスク用品</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-2" style="padding: 9px">使用状況：</div>
-                <div class="col-sm-10 form-inline" style="padding: 3px">
-                    <select class="form-control input-sm" id="state">
-                        <option value="使用中">使用中</option>
-                        <option value="故障中">故障中</option>
-                        <option value="保管中">保管中</option>
-                        <option value="処分済">処分済</option>
-                    </select>
+                <div class="row">
+                    <div class="col-sm-2" style="padding: 9px">使用状況：</div>
+                    <div class="col-sm-10 form-inline" style="padding: 3px">
+                        <select name="state" class="form-control input-sm" id="state">
+                            <option value="使用中">使用中</option>
+                            <option value="故障中">故障中</option>
+                            <option value="保管中">保管中</option>
+                            <option value="処分済">処分済</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-2" style="padding: 9px">OS：</div>
-                <div class="col-sm-10" style="padding: 3px">
-                    <input type="text" class="form-control input-sm" id="tf4" />
+                <div id="PC-info">
+                    <div class="row">
+                        <div class="col-sm-2" style="padding: 9px">OS：</div>
+                        <div class="col-sm-10" style="padding: 3px">
+                            <input name="os" type="text" class="PCinfo form-control input-sm" id="tf4" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2" style="padding: 9px">メモリ：</div>
+                        <div class="col-sm-10 form-inline" style="padding: 3px">
+                            <input name="ram" type="text" class="PCinfo form-control input-sm" id="tf5" size="30" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2" style="padding: 9px">耐用年数：</div>
+                        <div class="col-sm-10 form-inline" style="padding: 3px">
+                            <input
+                                name="year"
+                                type="text"
+                                class="PCinfo form-control input-sm"
+                                id="tf6"
+                                placeholder="数字のみ"
+                                size="30"
+                            />
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-2" style="padding: 9px">メモリ：</div>
-                <div class="col-sm-10 form-inline" style="padding: 3px">
-                    <input type="text" class="form-control input-sm" id="tf5" size="30" />
+                <div class="row">
+                    <div class="col-sm-2" style="padding: 9px">備考</div>
+                    <div class="col-sm-10" style="padding: 3px">
+                        <textarea name="note" class="form-control input-sm" rows="3" id="tf7"></textarea>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-2" style="padding: 9px">耐用年数：</div>
-                <div class="col-sm-10 form-inline" style="padding: 3px">
-                    <input type="text" class="form-control input-sm" id="tf6" placeholder="数字のみ" size="30" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-2" style="padding: 9px">備考</div>
-                <div class="col-sm-10" style="padding: 3px">
-                    <textarea class="form-control input-sm" rows="3" id="tf7"></textarea>
-                </div>
-            </div>
+            </form>
+        </div>
+        <div class="text-center">
+            <p id="result">　</p>
             <button class="btn btn-primary" onclick="buttonPressed()">登録</button>
-            <p id="result"></p>
         </div>
     </body>
 </html>
